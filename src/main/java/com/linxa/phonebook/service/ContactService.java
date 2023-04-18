@@ -44,14 +44,15 @@ public final class ContactService {
         new Thread(() -> ContactRepository.getInstance().delete(contact)).start();
     }
 
+    public boolean hasUniqueNumber(Contact contact) {
+        return Objects.isNull(contact.getId())
+            ? !cacheHolder.containsWithoutId(contact.getPhoneNumber())
+            : !cacheHolder.containsWithId(contact.getId(), contact.getPhoneNumber());
+    }
+
     private static class CacheHolder {
 
         private final Set<Contact> cache;
-
-        public CacheHolder(List<Contact> initialValues) {
-            this.cache = new HashSet<>(initialValues);
-        }
-
         private final Comparator<Contact> contactComparator = (o1, o2) -> {
             Integer compare = o1.getLastName().compareTo(o2.getLastName());
             if (Objects.equals(compare, 0))
@@ -59,7 +60,11 @@ public final class ContactService {
             return compare;
         };
 
-        public List<Contact> find(String searchTerm) {
+        CacheHolder(List<Contact> initialValues) {
+            this.cache = new HashSet<>(initialValues);
+        }
+
+        List<Contact> find(String searchTerm) {
             if (Objects.isNull(searchTerm))
                 return cache.stream().sorted(contactComparator).collect(Collectors.toList());
 
@@ -70,17 +75,31 @@ public final class ContactService {
                 .sorted(contactComparator).collect(Collectors.toList());
         }
 
-        public void add(Contact contact) {
+        void add(Contact contact) {
             cache.add(contact);
         }
 
-        public void update(Contact contact) {
+        void update(Contact contact) {
             cache.remove(contact);
             cache.add(contact);
         }
 
-        public void delete(Contact contact) {
+        void delete(Contact contact) {
             cache.remove(contact);
+        }
+
+        boolean containsWithoutId(String phoneNumber) {
+            return cache.stream().anyMatch(contact -> Objects.equals(contact.getPhoneNumber(), phoneNumber));
+        }
+
+        boolean containsWithId(Long id, String phoneNumber) {
+            return cache.stream().filter(contact -> {
+                System.out.println("ID: " + contact.getId());
+                return !Objects.equals(contact.getId(), id);
+            }).anyMatch(contact -> {
+                System.out.println("PN: " + contact.getPhoneNumber());
+                return Objects.equals(contact.getPhoneNumber(), phoneNumber);
+            });
         }
 
     }

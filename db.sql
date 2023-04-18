@@ -4,11 +4,11 @@ grant all privileges on linxa_phonebook.* to 'linxa'@'%' with grant option;
 
 create table contact
 (
-    id           int          not null auto_increment primary key,
+    id           int         not null auto_increment primary key,
     first_name   varchar(32),
     last_name    varchar(32),
-    email        varchar(256) not null,
-    phone_number varchar(32)  not null unique,
+    email        varchar(256),
+    phone_number varchar(32) not null unique,
     country      varchar(32),
     city         varchar(32),
     street       varchar(256)

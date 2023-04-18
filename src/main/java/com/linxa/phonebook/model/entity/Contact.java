@@ -28,6 +28,17 @@ public class Contact {
         this.street = street;
     }
 
+    public Contact(Contact other) {
+        this.id = other.getId();
+        this.firstName = other.getFirstName();
+        this.lastName = other.getLastName();
+        this.email = other.getEmail();
+        this.phoneNumber = other.getPhoneNumber();
+        this.country = other.getCountry();
+        this.city = other.getCity();
+        this.street = other.getStreet();
+    }
+
     public Long getId() {
         return id;
     }

@@ -13,6 +13,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 
+import java.util.Objects;
+
 
 public class ContactForm extends FormLayout {
 
@@ -48,8 +50,8 @@ public class ContactForm extends FormLayout {
     }
 
     public void setContact(Contact contact) {
-        this.contact = contact;
-        binder.setBean(contact);
+        this.contact = Objects.nonNull(contact) ? new Contact(contact) : null;
+        binder.setBean(this.contact);
     }
 
     private Component getButtons() {

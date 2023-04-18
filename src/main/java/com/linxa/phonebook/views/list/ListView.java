@@ -5,6 +5,8 @@ import com.linxa.phonebook.service.ContactService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -49,7 +51,7 @@ public class ListView extends VerticalLayout {
 
     private Component getContent() {
         grid.setSizeFull();
-        grid.setColumns("firstName", "lastName", "email");
+        grid.setColumns("firstName", "lastName", "email", "phoneNumber");
         grid.getColumns().forEach(column -> column.setAutoWidth(true));
         grid.asSingleSelect().addValueChangeListener(event -> editContact(event.getValue()));
 
@@ -94,7 +96,22 @@ public class ListView extends VerticalLayout {
     }
 
     private void saveContact(ContactForm.SaveEvent event) {
-        ContactService.getInstance().saveContact(event.getContact());
+        Contact contact = event.getContact();
+        if (Objects.isNull(contact.getPhoneNumber()) || contact.getPhoneNumber().isEmpty()) {
+            showErrorNotification("Phone number cannot be empty");
+            return;
+        }
+        var phoneNumber = contact.getPhoneNumber().replaceAll("[^\\d]+", "");
+        if (phoneNumber.isEmpty()) {
+            showErrorNotification("Please insert a valid phone number including digits");
+            return;
+        }
+        contact.setPhoneNumber(phoneNumber);
+        if (!ContactService.getInstance().hasUniqueNumber(contact)) {
+            showErrorNotification("The phone number is already registered");
+            return;
+        }
+        ContactService.getInstance().saveContact(contact);
         updateList();
         closeContactForm();
     }
@@ -103,6 +120,10 @@ public class ListView extends VerticalLayout {
         ContactService.getInstance().deleteContact(event.getContact());
         updateList();
         closeContactForm();
+    }
+
+    private void showErrorNotification(String message) {
+        Notification.show(message, 3000, Notification.Position.TOP_STRETCH).addThemeVariants(NotificationVariant.LUMO_ERROR);
     }
 
 }
