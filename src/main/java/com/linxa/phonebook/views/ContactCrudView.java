@@ -18,6 +18,7 @@ import com.vaadin.flow.router.Route;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 @PageTitle("Contacts")
 @Route("")
@@ -25,6 +26,8 @@ public class ContactCrudView extends Div {
 
     private final Crud<Contact> crud;
     private final ContactDataProvider dataProvider;
+
+    private final AtomicLong selectedContactId = new AtomicLong(0L);
 
     public ContactCrudView() {
         this.crud = new Crud<>(Contact.class, createEditor());
@@ -37,8 +40,6 @@ public class ContactCrudView extends Div {
     }
 
     private CrudEditor<Contact> createEditor() {
-        TextField id = new TextField("id");
-        id.setVisible(false);
         TextField firstName = new TextField("First name");
         TextField lastName = new TextField("Last name");
         EmailField email = new EmailField("Email");
@@ -49,20 +50,17 @@ public class ContactCrudView extends Div {
         FormLayout form = new FormLayout(firstName, lastName, email, phoneNumber, country, city, street);
 
         Binder<Contact> binder = new Binder<>(Contact.class);
-//        binder.addValueChangeListener(event -> {
-//            System.out.println("HERE");
-//            System.out.println(event.getValue().toString());
-//        });
         binder.forField(firstName).bind(Contact::getFirstName, Contact::setFirstName);
         binder.forField(lastName).bind(Contact::getLastName, Contact::setLastName);
         binder.forField(email)
             .withValidator(new EmailValidator("Please insert a valid email", true))
             .bind(Contact::getEmail, Contact::setEmail);
         binder.forField(phoneNumber)
+            .asRequired()
             .withConverter(value -> value.replaceAll("[^\\d]+", ""), value -> value)
             .withValidator(value -> Objects.nonNull(value) && !value.isEmpty(), "Please insert a valid phone number")
             .withValidator(value -> {
-                var currentContactId = Objects.nonNull(binder.getBean()) ? binder.getBean().getId() : null;
+                var currentContactId = Objects.equals(selectedContactId.get(), 0L) ? null : selectedContactId.get();
                 return dataProvider.isUniquePhoneNumber(currentContactId, value);
             }, "The phone number is already registered in the system")
             .withNullRepresentation("").bind(Contact::getPhoneNumber, Contact::setPhoneNumber);
@@ -76,7 +74,7 @@ public class ContactCrudView extends Div {
     private void setupGrid() {
         Grid<Contact> grid = crud.getGrid();
 
-        List<String> visibleColumns = Arrays.asList(/*"id",*/ "firstName", "lastName", "email", "phoneNumber", "vaadin-crud-edit-column");
+        List<String> visibleColumns = Arrays.asList("firstName", "lastName", "email", "phoneNumber", "vaadin-crud-edit-column");
         grid.getColumns().forEach(column -> {
             String key = column.getKey();
             if (!visibleColumns.contains(key))
@@ -84,7 +82,6 @@ public class ContactCrudView extends Div {
         });
 
         grid.setColumnOrder(
-//            grid.getColumnByKey("id"),
             grid.getColumnByKey("firstName"),
             grid.getColumnByKey("lastName"),
             grid.getColumnByKey("email"),
@@ -94,8 +91,16 @@ public class ContactCrudView extends Div {
 
     private void setupDataProvider() {
         crud.setDataProvider(dataProvider);
-        crud.addSaveListener(event -> dataProvider.persist(event.getItem()));
-        crud.addDeleteListener(event -> dataProvider.delete(event.getItem()));
+        crud.addEditListener(event -> selectedContactId.set(event.getItem().getId()));
+        crud.addCancelListener(event -> selectedContactId.set(0L));
+        crud.addSaveListener(event -> {
+            dataProvider.persist(event.getItem());
+            selectedContactId.set(0L);
+        });
+        crud.addDeleteListener(event -> {
+            dataProvider.delete(event.getItem());
+            selectedContactId.set(0L);
+        });
     }
 
 }
