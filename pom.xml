@@ -38,6 +38,12 @@
             <artifactId>vaadin-core</artifactId>
         </dependency>
 
+        <!-- Vaadin CRUD -->
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-crud-flow</artifactId>
+        </dependency>
+
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
