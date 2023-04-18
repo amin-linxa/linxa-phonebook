@@ -24,6 +24,13 @@ public final class ContactRepository {
         "     insert into contact (first_name, last_name, email, phone_number, country, city, street)" +
             " values (?, ?, ?, ?, ?, ?, ?)";
 
+    private static final String SQL_UPDATE =
+        "     update contact" +
+            " set first_name = ?, last_name = ?, email = ?, phone_number = ?, country = ?, city = ?, street = ?" +
+            " where id = ?";
+
+    private static final String SQL_DELETE = "delete from contact where id = ?";
+
     private static final ContactRepository INSTANCE = new ContactRepository();
 
     private ContactRepository() {
@@ -36,8 +43,8 @@ public final class ContactRepository {
     public List<Contact> findAll() {
         var dbProperties = DbProperties.getInstance();
         try (var connection = DriverManager.getConnection(dbProperties.getConnectionUrl(), dbProperties.getUsername(), dbProperties.getPassword())) {
-             var statement = connection.prepareStatement(SQL_FIND_ALL);
-             var resultSet = statement.executeQuery();
+            var statement = connection.prepareStatement(SQL_FIND_ALL);
+            var resultSet = statement.executeQuery();
             var contacts = new ArrayList<Contact>();
             while (resultSet.next())
                 contacts.add(extractContact(resultSet));
@@ -51,10 +58,10 @@ public final class ContactRepository {
     public List<Contact> search(String term) {
         var dbProperties = DbProperties.getInstance();
         try (var connection = DriverManager.getConnection(dbProperties.getConnectionUrl(), dbProperties.getUsername(), dbProperties.getPassword())) {
-             var statement = connection.prepareStatement(SQL_SEARCH);
-             statement.setString(1, term);
-             statement.setString(2, term);
-             var resultSet = statement.executeQuery();
+            var statement = connection.prepareStatement(SQL_SEARCH);
+            statement.setString(1, term);
+            statement.setString(2, term);
+            var resultSet = statement.executeQuery();
             var contacts = new ArrayList<Contact>();
             while (resultSet.next())
                 contacts.add(extractContact(resultSet));
@@ -65,7 +72,7 @@ public final class ContactRepository {
         }
     }
 
-    public Contact insert(Contact contact) {
+    public Long insert(Contact contact) {
         var dbProperties = DbProperties.getInstance();
         try (var connection = DriverManager.getConnection(dbProperties.getConnectionUrl(), dbProperties.getUsername(), dbProperties.getPassword())) {
             var statement = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
@@ -77,11 +84,39 @@ public final class ContactRepository {
             statement.setString(6, contact.getCity());
             statement.setString(7, contact.getStreet());
             statement.executeUpdate();
-            contact.setId(statement.getGeneratedKeys().getLong(1));
-            return contact;
+            return statement.getGeneratedKeys().getLong(1);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public void update(Contact contact) {
+        var dbProperties = DbProperties.getInstance();
+        try (var connection = DriverManager.getConnection(dbProperties.getConnectionUrl(), dbProperties.getUsername(), dbProperties.getPassword())) {
+            var statement = connection.prepareStatement(SQL_UPDATE);
+            statement.setString(1, contact.getFirstName());
+            statement.setString(2, contact.getLastName());
+            statement.setString(3, contact.getEmail());
+            statement.setString(4, contact.getPhoneNumber());
+            statement.setString(5, contact.getCountry());
+            statement.setString(6, contact.getCity());
+            statement.setString(7, contact.getStreet());
+            statement.setLong(8, contact.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delete(Contact contact) {
+        var dbProperties = DbProperties.getInstance();
+        try (var connection = DriverManager.getConnection(dbProperties.getConnectionUrl(), dbProperties.getUsername(), dbProperties.getPassword())) {
+            var statement = connection.prepareStatement(SQL_DELETE);
+            statement.setLong(1, contact.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

@@ -100,7 +100,7 @@ public class ListView extends VerticalLayout {
     }
 
     private void deleteContact(ContactForm.DeleteEvent event) {
-//        contactService.deleteContact(event.getContact());
+        ContactService.getInstance().deleteContact(event.getContact());
         updateList();
         closeContactForm();
     }

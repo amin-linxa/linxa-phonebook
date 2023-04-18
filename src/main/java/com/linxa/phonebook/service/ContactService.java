@@ -25,11 +25,15 @@ public final class ContactService {
     }
 
     public void saveContact(Contact contact) {
-        ContactRepository.getInstance().insert(contact);
+        ContactRepository contactRepository = ContactRepository.getInstance();
+        if (Objects.isNull(contact.getId()))
+            contactRepository.insert(contact);
+        else
+            contactRepository.update(contact);
     }
 
     public void deleteContact(Contact contact) {
-//        ContactRepository.getInstance().delete(contact);
+        ContactRepository.getInstance().delete(contact);
     }
 
 }
