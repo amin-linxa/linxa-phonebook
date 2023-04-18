@@ -61,7 +61,7 @@ public class ListView extends VerticalLayout {
             grid.asSingleSelect().clear();
         });
 
-        final var content = new HorizontalLayout(grid, form);
+        var content = new HorizontalLayout(grid, form);
         content.add(grid, form);
         content.setFlexGrow(2, grid);
         content.setFlexGrow(1, form);
@@ -83,7 +83,7 @@ public class ListView extends VerticalLayout {
         editContact(new Contact());
     }
 
-    private void editContact(final Contact contact) {
+    private void editContact(Contact contact) {
         if (Objects.isNull(contact)) {
             closeContactForm();
             return;
@@ -93,13 +93,13 @@ public class ListView extends VerticalLayout {
         form.setVisible(true);
     }
 
-    private void saveContact(final ContactForm.SaveEvent event) {
+    private void saveContact(ContactForm.SaveEvent event) {
         ContactService.getInstance().saveContact(event.getContact());
         updateList();
         closeContactForm();
     }
 
-    private void deleteContact(final ContactForm.DeleteEvent event) {
+    private void deleteContact(ContactForm.DeleteEvent event) {
 //        contactService.deleteContact(event.getContact());
         updateList();
         closeContactForm();

@@ -47,7 +47,7 @@ public class ContactForm extends FormLayout {
         );
     }
 
-    public void setContact(final Contact contact) {
+    public void setContact(Contact contact) {
         this.contact = contact;
         binder.setBean(contact);
     }
@@ -67,15 +67,15 @@ public class ContactForm extends FormLayout {
         return new HorizontalLayout(save, delete, cancel);
     }
 
-    public Registration addDeleteListener(final ComponentEventListener<DeleteEvent> listener) {
-        return addListener(DeleteEvent.class, listener);
-    }
-
-    public Registration addSaveListener(final ComponentEventListener<SaveEvent> listener) {
+    public Registration addSaveListener(ComponentEventListener<SaveEvent> listener) {
         return addListener(SaveEvent.class, listener);
     }
 
-    public Registration addCloseListener(final ComponentEventListener<CloseEvent> listener) {
+    public Registration addDeleteListener(ComponentEventListener<DeleteEvent> listener) {
+        return addListener(DeleteEvent.class, listener);
+    }
+
+    public Registration addCloseListener(ComponentEventListener<CloseEvent> listener) {
         return addListener(CloseEvent.class, listener);
     }
 
@@ -84,7 +84,7 @@ public class ContactForm extends FormLayout {
 
         private final Contact contact;
 
-        protected ContactFormEvent(final ContactForm source, final Contact contact) {
+        protected ContactFormEvent(ContactForm source, Contact contact) {
             super(source, false);
             this.contact = contact;
         }
@@ -96,20 +96,20 @@ public class ContactForm extends FormLayout {
     }
 
     public static class SaveEvent extends ContactFormEvent {
-        SaveEvent(final ContactForm source, final Contact contact) {
+        SaveEvent(ContactForm source, Contact contact) {
             super(source, contact);
         }
     }
 
     public static class DeleteEvent extends ContactFormEvent {
-        DeleteEvent(final ContactForm source, final Contact contact) {
+        DeleteEvent(ContactForm source, Contact contact) {
             super(source, contact);
         }
 
     }
 
     public static class CloseEvent extends ContactFormEvent {
-        CloseEvent(final ContactForm source) {
+        CloseEvent(ContactForm source) {
             super(source, null);
         }
     }

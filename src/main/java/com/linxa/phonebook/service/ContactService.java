@@ -17,18 +17,18 @@ public final class ContactService {
         return INSTANCE;
     }
 
-    public List<Contact> findContacts(final String searchTerm) {
+    public List<Contact> findContacts(String searchTerm) {
         ContactRepository contactRepository = ContactRepository.getInstance();
         return Objects.isNull(searchTerm) || searchTerm.isEmpty()
             ? contactRepository.findAll()
             : contactRepository.search(searchTerm);
     }
 
-    public void saveContact(final Contact contact) {
+    public void saveContact(Contact contact) {
         ContactRepository.getInstance().insert(contact);
     }
 
-    public void deleteContact(final Contact contact) {
+    public void deleteContact(Contact contact) {
 //        ContactRepository.getInstance().delete(contact);
     }
 

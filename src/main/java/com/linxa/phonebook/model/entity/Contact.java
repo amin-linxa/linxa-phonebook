@@ -30,7 +30,7 @@ public class Contact {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -38,7 +38,7 @@ public class Contact {
         return firstName;
     }
 
-    public void setFirstName(final String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
@@ -46,7 +46,7 @@ public class Contact {
         return lastName;
     }
 
-    public void setLastName(final String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
@@ -54,7 +54,7 @@ public class Contact {
         return email;
     }
 
-    public void setEmail(final String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -62,7 +62,7 @@ public class Contact {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(final String phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -70,7 +70,7 @@ public class Contact {
         return country;
     }
 
-    public void setCountry(final String country) {
+    public void setCountry(String country) {
         this.country = country;
     }
 
@@ -78,7 +78,7 @@ public class Contact {
         return city;
     }
 
-    public void setCity(final String city) {
+    public void setCity(String city) {
         this.city = city;
     }
 
@@ -86,7 +86,7 @@ public class Contact {
         return street;
     }
 
-    public void setStreet(final String street) {
+    public void setStreet(String street) {
         this.street = street;
     }
 
