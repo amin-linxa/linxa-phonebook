@@ -26,10 +26,6 @@ public final class ContactService {
 
     public List<Contact> findContacts(String searchTerm) {
         return cacheHolder.find(searchTerm);
-//        ContactRepository contactRepository = ContactRepository.getInstance();
-//        return Objects.isNull(searchTerm) || searchTerm.isEmpty()
-//            ? contactRepository.findAll()
-//            : contactRepository.search(searchTerm);
     }
 
     public void saveContact(Contact contact) {
@@ -39,13 +35,13 @@ public final class ContactService {
             cacheHolder.add(contact);
         } else {
             cacheHolder.update(contact);
-//            contactRepository.update(contact); // move to new thread
+            new Thread(() -> contactRepository.update(contact)).start();
         }
     }
 
     public void deleteContact(Contact contact) {
         cacheHolder.delete(contact);
-//        ContactRepository.getInstance().delete(contact);
+        new Thread(() -> ContactRepository.getInstance().delete(contact)).start();
     }
 
     private static class CacheHolder {
