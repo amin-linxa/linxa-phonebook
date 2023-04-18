@@ -15,10 +15,8 @@ import com.vaadin.flow.router.Route;
 import java.util.Objects;
 
 @PageTitle("Contacts")
-@Route(value = "")
+@Route("")
 public class ListView extends VerticalLayout {
-
-    private final ContactService contactService;
 
     private final TextField searchField = new TextField();
     private final Button addContactBtn = new Button("Add Contact");
@@ -26,9 +24,7 @@ public class ListView extends VerticalLayout {
     private final Grid<Contact> grid = new Grid<>(Contact.class);
     private final ContactForm form = new ContactForm();
 
-    public ListView(final ContactService contactService) {
-        this.contactService = contactService;
-
+    public ListView() {
         setSizeFull();
 
         add(
@@ -74,7 +70,7 @@ public class ListView extends VerticalLayout {
     }
 
     private void updateList() {
-        grid.setItems(contactService.findContacts(searchField.getValue()));
+        grid.setItems(ContactService.getInstance().findContacts(searchField.getValue()));
     }
 
     private void closeContactForm() {
@@ -98,13 +94,13 @@ public class ListView extends VerticalLayout {
     }
 
     private void saveContact(final ContactForm.SaveEvent event) {
-        contactService.saveContact(event.getContact());
+        ContactService.getInstance().saveContact(event.getContact());
         updateList();
         closeContactForm();
     }
 
     private void deleteContact(final ContactForm.DeleteEvent event) {
-        contactService.deleteContact(event.getContact());
+//        contactService.deleteContact(event.getContact());
         updateList();
         closeContactForm();
     }

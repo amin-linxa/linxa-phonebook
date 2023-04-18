@@ -2,30 +2,34 @@ package com.linxa.phonebook.service;
 
 import com.linxa.phonebook.model.entity.Contact;
 import com.linxa.phonebook.model.repository.ContactRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 
-@Service
-@AllArgsConstructor
-public class ContactService {
+public final class ContactService {
 
-    private final ContactRepository contactRepository;
+    private static final ContactService INSTANCE = new ContactService();
+
+    private ContactService() {
+    }
+
+    public static ContactService getInstance() {
+        return INSTANCE;
+    }
 
     public List<Contact> findContacts(final String searchTerm) {
+        ContactRepository contactRepository = ContactRepository.getInstance();
         return Objects.isNull(searchTerm) || searchTerm.isEmpty()
             ? contactRepository.findAll()
             : contactRepository.search(searchTerm);
     }
 
     public void saveContact(final Contact contact) {
-        contactRepository.save(contact);
+        ContactRepository.getInstance().insert(contact);
     }
 
     public void deleteContact(final Contact contact) {
-        contactRepository.delete(contact);
+//        ContactRepository.getInstance().delete(contact);
     }
 
 }

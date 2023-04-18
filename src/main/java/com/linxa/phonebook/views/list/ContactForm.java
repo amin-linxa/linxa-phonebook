@@ -10,11 +10,8 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.shared.Registration;
-import lombok.Getter;
 
 
 public class ContactForm extends FormLayout {
@@ -31,7 +28,7 @@ public class ContactForm extends FormLayout {
     private final Button delete = new Button("Delete");
     private final Button cancel = new Button("cancel");
 
-    private final Binder<Contact> binder = new BeanValidationBinder<>(Contact.class);
+    private final Binder<Contact> binder = new Binder<>(Contact.class);
 
     private Contact contact;
 
@@ -52,13 +49,13 @@ public class ContactForm extends FormLayout {
 
     public void setContact(final Contact contact) {
         this.contact = contact;
-        binder.readBean(this.contact);
+        binder.setBean(contact);
     }
 
     private Component getButtons() {
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addClickShortcut(Key.ENTER);
-        save.addClickListener(event -> validateAndSave());
+        save.addClickListener(event -> fireEvent(new SaveEvent(this, contact)));
 
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         delete.addClickListener(event -> fireEvent(new DeleteEvent(this, contact)));
@@ -68,15 +65,6 @@ public class ContactForm extends FormLayout {
         cancel.addClickListener(event -> fireEvent(new CloseEvent(this)));
 
         return new HorizontalLayout(save, delete, cancel);
-    }
-
-    private void validateAndSave() {
-        try {
-            binder.writeBean(contact);
-            fireEvent(new SaveEvent(this, contact));
-        } catch (final ValidationException e) {
-            e.printStackTrace();
-        }
     }
 
     public Registration addDeleteListener(final ComponentEventListener<DeleteEvent> listener) {
@@ -92,7 +80,6 @@ public class ContactForm extends FormLayout {
     }
 
     // Events
-    @Getter
     public static abstract class ContactFormEvent extends ComponentEvent<ContactForm> {
 
         private final Contact contact;
@@ -100,6 +87,10 @@ public class ContactForm extends FormLayout {
         protected ContactFormEvent(final ContactForm source, final Contact contact) {
             super(source, false);
             this.contact = contact;
+        }
+
+        public Contact getContact() {
+            return contact;
         }
 
     }
