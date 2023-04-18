@@ -1,5 +1,7 @@
 package com.linxa.phonebook.model.entity;
 
+import java.util.Objects;
+
 public class Contact {
 
     private Long id;
@@ -88,6 +90,19 @@ public class Contact {
 
     public void setStreet(String street) {
         this.street = street;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Contact contact = (Contact) o;
+        return Objects.equals(id, contact.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

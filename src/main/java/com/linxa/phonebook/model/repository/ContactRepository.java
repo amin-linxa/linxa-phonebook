@@ -72,7 +72,7 @@ public final class ContactRepository {
         }
     }
 
-    public Long insert(Contact contact) {
+    public void insert(Contact contact) {
         var dbProperties = DbProperties.getInstance();
         try (var connection = DriverManager.getConnection(dbProperties.getConnectionUrl(), dbProperties.getUsername(), dbProperties.getPassword())) {
             var statement = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
@@ -84,10 +84,9 @@ public final class ContactRepository {
             statement.setString(6, contact.getCity());
             statement.setString(7, contact.getStreet());
             statement.executeUpdate();
-            return statement.getGeneratedKeys().getLong(1);
+            contact.setId(statement.getGeneratedKeys().getLong(1));
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
     }
 
