@@ -35,7 +35,11 @@ public final class ContactService {
             cacheHolder.add(contact);
         } else {
             cacheHolder.update(contact);
-            new Thread(() -> contactRepository.update(contact)).start();
+            new Thread(() -> {
+                var old = contactRepository.findOne(contact.getId());
+                NotificationService.getInstance().sendNotification(old);
+                contactRepository.update(contact);
+            }).start();
         }
     }
 

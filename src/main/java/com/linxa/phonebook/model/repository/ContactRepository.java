@@ -20,6 +20,8 @@ public final class ContactRepository {
             " where lower(first_name) like lower(concat('%', ?, '%'))" +
             "   or lower(last_name) like lower(concat('%', ?, '%'))";
 
+    private static final String SQL_FIND_ONE = "select * from contact where id = ?";
+
     private static final String SQL_INSERT =
         "     insert into contact (first_name, last_name, email, phone_number, country, city, street)" +
             " values (?, ?, ?, ?, ?, ?, ?)";
@@ -55,6 +57,20 @@ public final class ContactRepository {
         }
     }
 
+    public Contact findOne(Long id) {
+        var dbProperties = DbProperties.getInstance();
+        try (var connection = DriverManager.getConnection(dbProperties.getConnectionUrl(), dbProperties.getUsername(), dbProperties.getPassword())) {
+            var statement = connection.prepareStatement(SQL_FIND_ONE);
+            statement.setLong(1, id);
+            var resultSet = statement.executeQuery();
+            resultSet.next();
+            return extractContact(resultSet);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public List<Contact> search(String term) {
         var dbProperties = DbProperties.getInstance();
         try (var connection = DriverManager.getConnection(dbProperties.getConnectionUrl(), dbProperties.getUsername(), dbProperties.getPassword())) {
@@ -84,7 +100,14 @@ public final class ContactRepository {
             statement.setString(6, contact.getCity());
             statement.setString(7, contact.getStreet());
             statement.executeUpdate();
-            contact.setId(statement.getGeneratedKeys().getLong(1));
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    contact.setId(generatedKeys.getLong(1));
+                }
+                else {
+                    throw new SQLException("Creating user failed, no ID obtained.");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
