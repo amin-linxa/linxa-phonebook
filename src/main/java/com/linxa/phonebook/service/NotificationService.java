@@ -1,6 +1,6 @@
 package com.linxa.phonebook.service;
 
-import com.linxa.phonebook.model.entity.Contact;
+import com.linxa.phonebook.data.entity.Contact;
 
 import java.util.Objects;
 

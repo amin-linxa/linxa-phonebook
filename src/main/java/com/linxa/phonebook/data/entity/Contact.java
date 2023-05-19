@@ -1,4 +1,4 @@
-package com.linxa.phonebook.model.entity;
+package com.linxa.phonebook.data.entity;
 
 import java.util.Objects;
 
